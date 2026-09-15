@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import Layout from "../components/Layout";
 import { categories } from "../data/categories";
 import { templates } from "../data/templates";
+import { ChevronIcon, HistoryIcon, InfoIcon, SearchIcon, SettingsIcon } from "../components/icons";
 
 export default function Home() {
   const [query, setQuery] = useState("");
@@ -30,18 +31,21 @@ export default function Home() {
       rightAction={
         <div style={{ display: "flex", gap: 6 }}>
           <Link className="icon-btn" to="/principles" aria-label="עקרונות שימוש" title="עקרונות שימוש">
-            ⓘ
+            <InfoIcon />
           </Link>
           <Link className="icon-btn" to="/history" aria-label="היסטוריה" title="היסטוריה">
-            🕑
+            <HistoryIcon />
           </Link>
           <Link className="icon-btn" to="/settings" aria-label="הגדרות" title="הגדרות">
-            ⚙
+            <SettingsIcon />
           </Link>
         </div>
       }
     >
       <div className="search-box">
+        <span className="search-icon">
+          <SearchIcon />
+        </span>
         <input
           type="search"
           placeholder="חיפוש תבנית או קטגוריה..."
@@ -67,7 +71,9 @@ export default function Home() {
                     </span>
                     <span className="card-sub">{cat?.name}</span>
                   </div>
-                  <span className="chevron">‹</span>
+                  <span className="chevron">
+                    <ChevronIcon />
+                  </span>
                 </Link>
               );
             })
@@ -83,7 +89,9 @@ export default function Home() {
                 </span>
                 <span className="card-sub">{templateCounts.get(c.id) ?? 0} תבניות</span>
               </div>
-              <span className="chevron">‹</span>
+              <span className="chevron">
+                <ChevronIcon />
+              </span>
             </Link>
           ))}
         </div>

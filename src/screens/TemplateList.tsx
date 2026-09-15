@@ -2,6 +2,7 @@ import { Link, useParams } from "react-router-dom";
 import Layout from "../components/Layout";
 import { categories } from "../data/categories";
 import { templates } from "../data/templates";
+import { ChevronIcon } from "../components/icons";
 
 export default function TemplateList() {
   const { categoryId } = useParams<{ categoryId: string }>();
@@ -19,7 +20,9 @@ export default function TemplateList() {
                 {t.title}
               </span>
             </div>
-            <span className="chevron">‹</span>
+            <span className="chevron">
+              <ChevronIcon />
+            </span>
           </Link>
         ))}
         {items.length === 0 ? <p className="empty-state">לא נמצאו תבניות בקטגוריה זו.</p> : null}

@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import { useNavigate } from "react-router-dom";
+import { BackIcon, ShieldIcon } from "./icons";
 
 interface LayoutProps {
   title: string;
@@ -15,9 +16,13 @@ export default function Layout({ title, showBack, rightAction, children }: Layou
       <header className="topbar">
         {showBack ? (
           <button className="icon-btn" onClick={() => navigate(-1)} aria-label="חזרה">
-            ‹
+            <BackIcon />
           </button>
-        ) : null}
+        ) : (
+          <span className="topbar-mark">
+            <ShieldIcon size={20} />
+          </span>
+        )}
         <h1>{title}</h1>
         {rightAction}
       </header>
