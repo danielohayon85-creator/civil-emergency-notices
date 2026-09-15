@@ -1,0 +1,358 @@
+@import "@fontsource/heebo/400.css";
+@import "@fontsource/heebo/500.css";
+@import "@fontsource/heebo/700.css";
+
+:root {
+  --navy: #0b2545;
+  --navy-dark: #071a33;
+  --navy-soft: #e8edf4;
+  --paper: #f7f8fa;
+  --card: #ffffff;
+  --border: #dde3ec;
+  --text: #16213a;
+  --text-muted: #5b6a86;
+  --danger: #b3261e;
+  --ok: #1e7d4a;
+  --radius: 14px;
+  --radius-sm: 8px;
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--text);
+  font-family: "Heebo", system-ui, sans-serif;
+  direction: rtl;
+}
+
+button,
+input,
+textarea {
+  font-family: inherit;
+}
+
+a {
+  color: inherit;
+}
+
+img {
+  max-width: 100%;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+.app-shell {
+  max-width: 640px;
+  margin: 0 auto;
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.topbar {
+  position: sticky;
+  top: env(safe-area-inset-top, 0px);
+  z-index: 10;
+  background: var(--navy);
+  color: #fff;
+  padding: 14px 16px calc(14px);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.topbar h1 {
+  font-size: 1.05rem;
+  font-weight: 700;
+  margin: 0;
+  flex: 1;
+}
+
+.icon-btn {
+  background: rgba(255, 255, 255, 0.12);
+  border: none;
+  color: #fff;
+  border-radius: var(--radius-sm);
+  padding: 8px 10px;
+  font-size: 0.95rem;
+  cursor: pointer;
+  line-height: 1;
+}
+
+.icon-btn:active {
+  background: rgba(255, 255, 255, 0.22);
+}
+
+.main {
+  flex: 1;
+  padding: 14px 16px 32px;
+}
+
+.search-box {
+  margin: 4px 0 14px;
+}
+
+.search-box input {
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  background: var(--card);
+  font-size: 1rem;
+  color: var(--text);
+}
+
+.search-box input:focus {
+  outline: 2px solid var(--navy);
+  outline-offset: 1px;
+}
+
+.card-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.card-link {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px 16px;
+  text-decoration: none;
+  color: var(--text);
+  border-right: 4px solid var(--navy);
+}
+
+.card-link:active {
+  background: var(--navy-soft);
+}
+
+.card-link .card-title {
+  font-weight: 600;
+  font-size: 1rem;
+  display: block;
+}
+
+.card-link .card-sub {
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  display: block;
+  margin-top: 2px;
+}
+
+.card-link .chevron {
+  color: var(--navy);
+  font-size: 1.2rem;
+  flex-shrink: 0;
+}
+
+.empty-state {
+  color: var(--text-muted);
+  text-align: center;
+  padding: 40px 16px;
+}
+
+.section-title {
+  font-weight: 700;
+  font-size: 0.95rem;
+  margin: 18px 0 8px;
+  color: var(--navy);
+}
+
+.field-group {
+  margin-bottom: 14px;
+}
+
+.field-group label {
+  display: block;
+  font-size: 0.88rem;
+  font-weight: 600;
+  margin-bottom: 6px;
+  color: var(--text);
+}
+
+.field-group .field-hint {
+  display: block;
+  font-size: 0.78rem;
+  color: var(--danger);
+  font-weight: 500;
+  margin-bottom: 6px;
+}
+
+.field-group input,
+.field-group textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  font-size: 0.95rem;
+  background: var(--card);
+  color: var(--text);
+}
+
+.field-group input.missing,
+.field-group textarea.missing {
+  border-color: var(--danger);
+}
+
+.field-group.global {
+  background: var(--navy-soft);
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+}
+
+.preview-box {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px;
+  white-space: pre-wrap;
+  line-height: 1.6;
+  font-size: 0.95rem;
+  margin-bottom: 16px;
+}
+
+.preview-box mark {
+  background: none;
+  color: var(--danger);
+  border: 1px dashed var(--danger);
+  border-radius: 4px;
+  padding: 0 3px;
+  font-weight: 600;
+}
+
+.checklist {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.checklist-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+  font-size: 0.88rem;
+  cursor: pointer;
+}
+
+.checklist-item input {
+  margin-top: 3px;
+  flex-shrink: 0;
+  width: 18px;
+  height: 18px;
+}
+
+.actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.btn {
+  display: block;
+  width: 100%;
+  padding: 14px 16px;
+  border-radius: var(--radius);
+  border: none;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  text-align: center;
+}
+
+.btn-primary {
+  background: var(--navy);
+  color: #fff;
+}
+
+.btn-secondary {
+  background: var(--card);
+  color: var(--navy);
+  border: 1px solid var(--navy);
+}
+
+.btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.btn-ghost {
+  background: transparent;
+  color: var(--navy);
+  border: none;
+  font-weight: 600;
+  padding: 10px;
+}
+
+.help-text {
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  line-height: 1.6;
+}
+
+.principles-list,
+.checklist-static {
+  padding-right: 18px;
+  line-height: 1.9;
+  font-size: 0.92rem;
+}
+
+.settings-form .field-group {
+  margin-bottom: 18px;
+}
+
+.toast {
+  position: fixed;
+  bottom: calc(20px + env(safe-area-inset-bottom, 0px));
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--navy-dark);
+  color: #fff;
+  padding: 10px 18px;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  z-index: 50;
+}
+
+.history-item {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 12px 14px;
+  margin-bottom: 10px;
+}
+
+.history-item .history-meta {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  margin-bottom: 6px;
+}
+
+.history-item .history-text {
+  white-space: pre-wrap;
+  font-size: 0.88rem;
+  line-height: 1.5;
+}
