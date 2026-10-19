@@ -28,12 +28,27 @@ function contextLabel(body: string, matchIndex: number, occurrence: number): str
   return `פרט ${occurrence}`;
 }
 
+/** Many bracket placeholders already encode a closed set of alternatives, e.g.
+ * "[חירום/פעילות מצומצמת]" — split on "/" and treat as quick-pick options, unless any
+ * part is itself a nested blank/placeholder (too complex to offer as a single chip). */
+function parseOptions(raw: string): string[] | null {
+  if (!raw.includes("/")) return null;
+  const parts = raw
+    .split("/")
+    .map((p) => p.trim())
+    .filter(Boolean);
+  if (parts.length < 2) return null;
+  if (parts.some((p) => p.includes("___") || p.includes("[") || p.includes("]"))) return null;
+  return parts;
+}
+
 interface Occurrence {
   /** key used to store/substitute this field's value */
   key: string;
   /** human label shown above the input */
   label: string;
   isGlobal: boolean;
+  options: string[] | null;
   matchText: string;
   index: number;
 }
@@ -53,14 +68,17 @@ function walkOccurrences(body: string): Occurrence[] {
         key: `${raw}#${blankCount}`,
         label: contextLabel(body, index, blankCount),
         isGlobal: false,
+        options: null,
         matchText: m[0],
         index,
       });
     } else {
+      const isGlobal = GLOBAL_FIELD_KEYS.has(raw);
       result.push({
         key: raw,
         label: raw,
-        isGlobal: GLOBAL_FIELD_KEYS.has(raw),
+        isGlobal,
+        options: isGlobal ? null : parseOptions(raw),
         matchText: m[0],
         index,
       });
@@ -75,16 +93,17 @@ export interface ParsedField {
   key: string;
   label: string;
   isGlobal: boolean;
+  options: string[] | null;
 }
 
 /** Returns unique placeholder fields in a template body, in order of first appearance. */
 export function extractFields(body: string): ParsedField[] {
   const seen = new Set<string>();
   const fields: ParsedField[] = [];
-  for (const { key, label, isGlobal } of walkOccurrences(body)) {
+  for (const { key, label, isGlobal, options } of walkOccurrences(body)) {
     if (seen.has(key)) continue;
     seen.add(key);
-    fields.push({ key, label, isGlobal });
+    fields.push({ key, label, isGlobal, options });
   }
   return fields;
 }

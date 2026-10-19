@@ -147,6 +147,20 @@ export default function Compose() {
                   </a>
                 </span>
               ) : null}
+              {f.options ? (
+                <div className="field-options">
+                  {f.options.map((option) => (
+                    <button
+                      key={option}
+                      type="button"
+                      className={`chip ${values[f.key] === option ? "active" : ""}`}
+                      onClick={() => setField(f.key, option)}
+                    >
+                      {option}
+                    </button>
+                  ))}
+                </div>
+              ) : null}
               <input
                 id={`f-${f.key}`}
                 type="text"

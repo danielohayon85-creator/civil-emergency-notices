@@ -39,6 +39,31 @@ describe("renderMessage", () => {
   });
 });
 
+describe("options", () => {
+  it("splits a slash-separated placeholder into quick-pick options", () => {
+    const body = "הרשות עברה למתכונת [חירום/פעילות מצומצמת].";
+    const fields = extractFields(body);
+    expect(fields[0].options).toEqual(["חירום", "פעילות מצומצמת"]);
+  });
+
+  it("does not offer options when a slash-separated part has a nested blank", () => {
+    const body = "הצירים [נפתחו / יישארו סגורים עד ___].";
+    const fields = extractFields(body);
+    const compound = fields.find((f) => f.label.startsWith("נפתחו"));
+    expect(compound?.options).toBeNull();
+  });
+
+  it("leaves a plain free-text field without options", () => {
+    const body = "פינוי לכיוון [נקודת קליטה].";
+    expect(extractFields(body)[0].options).toBeNull();
+  });
+
+  it("never attaches options to a global field", () => {
+    const body = "[שם הרשות] מעדכנת.";
+    expect(extractFields(body)[0].options).toBeNull();
+  });
+});
+
 describe("isComplete", () => {
   it("is false until every field has a non-empty value", () => {
     const body = "[שם הרשות] ב[מיקום]";
