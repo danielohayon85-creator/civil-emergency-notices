@@ -1,12 +1,34 @@
 import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import Layout from "../components/Layout";
+import TemplateRow from "../components/TemplateRow";
+import { CategoryIcon } from "../components/categoryIcons";
 import { categories } from "../data/categories";
 import { templates } from "../data/templates";
-import { ChevronIcon, HistoryIcon, InfoIcon, SearchIcon, SettingsIcon } from "../components/icons";
+import { ChevronIcon, HistoryIcon, InfoIcon, MoonIcon, SearchIcon, SettingsIcon, SunIcon } from "../components/icons";
+import { loadFavorites } from "../state/favorites";
+import { loadRecentTemplateIds } from "../state/recent";
+import { applyTheme, resolveInitialTheme, setStoredTheme, type Theme } from "../state/theme";
 
 export default function Home() {
   const [query, setQuery] = useState("");
+  const [theme, setTheme] = useState<Theme>(() => resolveInitialTheme());
+
+  const templatesById = useMemo(() => new Map(templates.map((t) => [t.id, t])), []);
+  const catNameById = useMemo(() => new Map(categories.map((c) => [c.id, c.name])), []);
+
+  const favoriteTemplates = useMemo(
+    () => loadFavorites().map((id) => templatesById.get(id)).filter((t): t is NonNullable<typeof t> => Boolean(t)),
+    [templatesById]
+  );
+
+  const recentTemplates = useMemo(() => {
+    const favoriteIds = new Set(favoriteTemplates.map((t) => t.id));
+    return loadRecentTemplateIds()
+      .map((id) => templatesById.get(id))
+      .filter((t): t is NonNullable<typeof t> => Boolean(t) && !favoriteIds.has(t!.id))
+      .slice(0, 5);
+  }, [templatesById, favoriteTemplates]);
 
   const templateCounts = useMemo(() => {
     const counts = new Map<string, number>();
@@ -19,17 +41,26 @@ export default function Home() {
   const searchResults = useMemo(() => {
     const q = query.trim();
     if (!q) return null;
-    const catNameById = new Map(categories.map((c) => [c.id, c.name]));
     return templates.filter(
       (t) => t.title.includes(q) || (catNameById.get(t.categoryId) ?? "").includes(q)
     );
-  }, [query]);
+  }, [query, catNameById]);
+
+  const toggleTheme = () => {
+    const next: Theme = theme === "dark" ? "light" : "dark";
+    setTheme(next);
+    setStoredTheme(next);
+    applyTheme(next);
+  };
 
   return (
     <Layout
       title="בנק הודעות חירום"
       rightAction={
         <div style={{ display: "flex", gap: 6 }}>
+          <button className="icon-btn" onClick={toggleTheme} aria-label="החלפת מצב תצוגה" title="מצב כהה/בהיר">
+            {theme === "dark" ? <SunIcon /> : <MoonIcon />}
+          </button>
           <Link className="icon-btn" to="/principles" aria-label="עקרונות שימוש" title="עקרונות שימוש">
             <InfoIcon />
           </Link>
@@ -60,41 +91,54 @@ export default function Home() {
           {searchResults.length === 0 ? (
             <p className="empty-state">לא נמצאו תבניות תואמות.</p>
           ) : (
-            searchResults.map((t) => {
-              const cat = categories.find((c) => c.id === t.categoryId);
-              return (
-                <Link key={t.id} className="card-link" to={`/compose/${t.id}`}>
-                  <div style={{ flex: 1 }}>
-                    <span className="card-title">
-                      {t.number ? `${t.number}. ` : ""}
-                      {t.title}
-                    </span>
-                    <span className="card-sub">{cat?.name}</span>
-                  </div>
-                  <span className="chevron">
-                    <ChevronIcon />
-                  </span>
-                </Link>
-              );
-            })
+            searchResults.map((t) => (
+              <TemplateRow key={t.id} template={t} subtitle={catNameById.get(t.categoryId)} />
+            ))
           )}
         </div>
       ) : (
-        <div className="card-list">
-          {categories.map((c) => (
-            <Link key={c.id} className="card-link" to={`/category/${c.id}`}>
-              <div style={{ flex: 1 }}>
-                <span className="card-title">
-                  {c.order}. {c.name}
-                </span>
-                <span className="card-sub">{templateCounts.get(c.id) ?? 0} תבניות</span>
+        <>
+          {favoriteTemplates.length > 0 ? (
+            <>
+              <div className="section-title">מועדפים</div>
+              <div className="card-list" style={{ marginBottom: 20 }}>
+                {favoriteTemplates.map((t) => (
+                  <TemplateRow key={t.id} template={t} subtitle={catNameById.get(t.categoryId)} />
+                ))}
               </div>
-              <span className="chevron">
-                <ChevronIcon />
-              </span>
-            </Link>
-          ))}
-        </div>
+            </>
+          ) : null}
+
+          {recentTemplates.length > 0 ? (
+            <>
+              <div className="section-title">נעשה בהן שימוש לאחרונה</div>
+              <div className="card-list" style={{ marginBottom: 20 }}>
+                {recentTemplates.map((t) => (
+                  <TemplateRow key={t.id} template={t} subtitle={catNameById.get(t.categoryId)} />
+                ))}
+              </div>
+            </>
+          ) : null}
+
+          <div className="card-list">
+            {categories.map((c) => (
+              <Link key={c.id} className="card-link" to={`/category/${c.id}`}>
+                <span className="category-icon">
+                  <CategoryIcon id={c.id} />
+                </span>
+                <div style={{ flex: 1 }}>
+                  <span className="card-title">
+                    {c.order}. {c.name}
+                  </span>
+                  <span className="card-sub">{templateCounts.get(c.id) ?? 0} תבניות</span>
+                </div>
+                <span className="chevron">
+                  <ChevronIcon />
+                </span>
+              </Link>
+            ))}
+          </div>
+        </>
       )}
     </Layout>
   );

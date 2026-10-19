@@ -1,8 +1,8 @@
-import { Link, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import Layout from "../components/Layout";
+import TemplateRow from "../components/TemplateRow";
 import { categories } from "../data/categories";
 import { templates } from "../data/templates";
-import { ChevronIcon } from "../components/icons";
 
 export default function TemplateList() {
   const { categoryId } = useParams<{ categoryId: string }>();
@@ -13,17 +13,7 @@ export default function TemplateList() {
     <Layout title={category ? `${category.order}. ${category.name}` : "קטגוריה"} showBack>
       <div className="card-list">
         {items.map((t) => (
-          <Link key={t.id} className="card-link" to={`/compose/${t.id}`}>
-            <div style={{ flex: 1 }}>
-              <span className="card-title">
-                {t.number ? `${t.number}. ` : ""}
-                {t.title}
-              </span>
-            </div>
-            <span className="chevron">
-              <ChevronIcon />
-            </span>
-          </Link>
+          <TemplateRow key={t.id} template={t} />
         ))}
         {items.length === 0 ? <p className="empty-state">לא נמצאו תבניות בקטגוריה זו.</p> : null}
       </div>

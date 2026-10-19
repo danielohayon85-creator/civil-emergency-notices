@@ -1,4 +1,4 @@
-import { useMemo, useState, type ReactNode } from "react";
+import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { Link, useParams } from "react-router-dom";
 import Layout from "../components/Layout";
 import { categories } from "../data/categories";
@@ -12,6 +12,7 @@ import {
 } from "../lib/templateEngine";
 import { loadOrgProfile } from "../state/orgProfile";
 import { addHistoryEntry } from "../state/history";
+import { recordRecentTemplate } from "../state/recent";
 
 const FIELD_RE = /\[([^[\]]+)\]/g;
 
@@ -42,6 +43,10 @@ export default function Compose() {
   );
   const [checked, setChecked] = useState<boolean[]>(() => qualityChecklist.map(() => false));
   const [toast, setToast] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (template) recordRecentTemplate(template.id);
+  }, [template]);
 
   if (!template) {
     return (
