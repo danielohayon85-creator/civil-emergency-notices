@@ -1,4 +1,5 @@
 import type { OrgProfile } from "../state/orgProfile";
+import { matchPolicyOptions } from "../data/protectionLevels";
 
 const FIELD_RE = /\[([^[\]]+)\]/g;
 const MAX_LABEL_CONTEXT = 60;
@@ -22,6 +23,7 @@ function contextLabel(body: string, matchIndex: number, occurrence: number): str
   const ctx = before
     .slice(delimIndex + 1)
     .trim()
+    .replace(/^[,،]\s*/, "")
     .replace(/:$/, "")
     .trim();
   if (ctx && ctx.length <= MAX_LABEL_CONTEXT) return ctx;
@@ -49,6 +51,8 @@ interface Occurrence {
   label: string;
   isGlobal: boolean;
   options: string[] | null;
+  /** true when `options` came from the condensed protection-policy summary, not the template text itself */
+  isPolicyOptions: boolean;
   matchText: string;
   index: number;
 }
@@ -64,21 +68,27 @@ function walkOccurrences(body: string): Occurrence[] {
     const index = m.index ?? 0;
     if (isGenericBlank(raw)) {
       blankCount += 1;
+      const label = contextLabel(body, index, blankCount);
+      const policyOptions = matchPolicyOptions(label);
       result.push({
         key: `${raw}#${blankCount}`,
-        label: contextLabel(body, index, blankCount),
+        label,
         isGlobal: false,
-        options: null,
+        options: policyOptions,
+        isPolicyOptions: policyOptions !== null,
         matchText: m[0],
         index,
       });
     } else {
       const isGlobal = GLOBAL_FIELD_KEYS.has(raw);
+      const nativeOptions = isGlobal ? null : parseOptions(raw);
+      const policyOptions = isGlobal || nativeOptions ? null : matchPolicyOptions(raw);
       result.push({
         key: raw,
         label: raw,
         isGlobal,
-        options: isGlobal ? null : parseOptions(raw),
+        options: nativeOptions ?? policyOptions,
+        isPolicyOptions: policyOptions !== null,
         matchText: m[0],
         index,
       });
@@ -94,16 +104,17 @@ export interface ParsedField {
   label: string;
   isGlobal: boolean;
   options: string[] | null;
+  isPolicyOptions: boolean;
 }
 
 /** Returns unique placeholder fields in a template body, in order of first appearance. */
 export function extractFields(body: string): ParsedField[] {
   const seen = new Set<string>();
   const fields: ParsedField[] = [];
-  for (const { key, label, isGlobal, options } of walkOccurrences(body)) {
+  for (const { key, label, isGlobal, options, isPolicyOptions } of walkOccurrences(body)) {
     if (seen.has(key)) continue;
     seen.add(key);
-    fields.push({ key, label, isGlobal, options });
+    fields.push({ key, label, isGlobal, options, isPolicyOptions });
   }
   return fields;
 }

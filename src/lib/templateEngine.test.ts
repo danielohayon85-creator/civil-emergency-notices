@@ -64,6 +64,41 @@ describe("options", () => {
   });
 });
 
+describe("protection-policy quick-pick options", () => {
+  it("offers the 4 policy level names for a protection-policy blank", () => {
+    const body = "מדיניות ההתגוננות החלה באזור היא [___].";
+    const fields = extractFields(body);
+    expect(fields[0].isPolicyOptions).toBe(true);
+    expect(fields[0].options).toEqual([
+      "פעילות מלאה",
+      "פעילות חלקית",
+      "פעילות מצומצמת",
+      "פעילות הכרחית",
+    ]);
+  });
+
+  it("offers the 4 education-domain phrasings for a חינוך blank", () => {
+    const body = "חינוך: [___].";
+    const fields = extractFields(body);
+    expect(fields[0].isPolicyOptions).toBe(true);
+    expect(fields[0].options).toHaveLength(4);
+  });
+
+  it("does not attach policy options to an unrelated blank", () => {
+    const body = "מים וחשמל: [___].";
+    const fields = extractFields(body);
+    expect(fields[0].isPolicyOptions).toBe(false);
+    expect(fields[0].options).toBeNull();
+  });
+
+  it("prefers a template's own slash-options over the policy table when both could match", () => {
+    const body = "מערכת [חינוך/רווחה] תפעל כרגיל.";
+    const fields = extractFields(body);
+    expect(fields[0].isPolicyOptions).toBe(false);
+    expect(fields[0].options).toEqual(["חינוך", "רווחה"]);
+  });
+});
+
 describe("isComplete", () => {
   it("is false until every field has a non-empty value", () => {
     const body = "[שם הרשות] ב[מיקום]";

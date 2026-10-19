@@ -147,6 +147,12 @@ export default function Compose() {
                   </a>
                 </span>
               ) : null}
+              {f.isPolicyOptions ? (
+                <span className="field-hint">
+                  האפשרויות הן תמצית שלנו ל"מדרגי מדיניות ההתגוננות" — יש לוודא מול הנוסח
+                  המלא והעדכני של פיקוד העורף לפני שימוש בפועל.
+                </span>
+              ) : null}
               {f.options ? (
                 <div className="field-options">
                   {f.options.map((option) => (
